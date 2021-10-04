@@ -223,7 +223,9 @@ const compressImgByDir = ({
   })
 }
 
-//  异步递归读取文件夹下的文件
+/**
+ * 异步递归读取文件夹下的文件
+ * */
 function readDirFile(
   currentDirPath: any,
   isRecursion: boolean,

@@ -14,7 +14,7 @@ import builtins from 'rollup-plugin-node-builtins'
 import pkg from './package.json'
 
 const paths = {
-  input: path.join(__dirname, '/bin/tinyimg-scripts.ts'),
+  input: path.join(__dirname, 'src/bin/tinyimg-scripts.ts'),
   output: path.join(__dirname, '/dist')
 }
 
@@ -33,7 +33,7 @@ const rollupConfig = {
       file: pkg.module,
       format: 'es',
       name: pkg.name
-    },
+    }
   ],
   // plugins 需要注意引用顺序
   plugins: [
@@ -55,7 +55,7 @@ const rollupConfig = {
     eslint({
       throwOnError: true,
       throwOnWarning: true,
-      include: ['bin/*.ts', 'lib/**/*.ts'],
+      include: ['src/**/*.ts'],
       exclude: ['node_modules', 'dist', 'test']
     }),
 
