@@ -255,6 +255,9 @@ function readDirFile(
   })
 }
 
+/**
+ * 模块导出
+ */
 module.exports = {
   RandomHeader,
   RoundNum,
