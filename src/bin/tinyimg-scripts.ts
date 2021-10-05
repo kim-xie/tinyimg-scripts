@@ -2,16 +2,18 @@
 const program = require('commander')
 const path = require('path')
 const fs = require('fs')
-const packageInfo = require('../package.json')
+const packageInfo = require('../../package.json')
 const tinyImg = require('../lib/core/tinyImg')
 const logger = require('../lib/utils/logger')
 
 ;(async () => {
-  program.version(packageInfo.version, '-V, --version').usage('<inputDir | imgFile> [options]')
+  program
+    .version(packageInfo.version, '-V, --version')
+    .usage('<inputDir | imgFile> [outputDir] [options]')
 
   program
     .alias('tinyimg')
-    .requiredOption('-I, --inputDir <inputDir>', 'imgs or img input dir')
+    .option('-I, --inputDir <inputDir>', 'imgs or img input dir')
     .option('-F, --imgFile <imgPath>', 'img path')
     .option('-O, --outputDir <outputDir>', 'imgs or img output dir')
     .option('-R, --recursive [boolean]', 'imgs input dir recursive')

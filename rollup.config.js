@@ -6,6 +6,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import { eslint } from 'rollup-plugin-eslint'
 import { DEFAULT_EXTENSIONS } from '@babel/core'
 import { terser } from 'rollup-plugin-terser'
+import replace from 'rollup-plugin-replace'
 
 // 按需打包nodejs内置模块  尽可能少用node模块 node-builtins可能会引入过多的代码
 import builtins from 'rollup-plugin-node-builtins'
@@ -26,27 +27,18 @@ const rollupConfig = {
     {
       file: pkg.main,
       format: 'cjs',
-      name: pkg.name
-    },
-    // 输出 es 规范的代码
-    {
-      file: pkg.module,
-      format: 'es',
-      name: pkg.name
+      name: pkg.name,
+      banner: '#!/usr/bin/env node'
     }
   ],
+
   // plugins 需要注意引用顺序
   plugins: [
     // globals(),
     builtins(),
 
     // 解析第三方模块 -- Must be before rollup-plugin-typescript2 in the plugin list, especially when browser: true option is used
-    nodeResolve({
-      jsnext: true, // 该属性是指定将Node包转换为ES2015模块
-      // main 和 browser 属性将使插件决定将那些文件应用到bundle中
-      main: true, // Default: true
-      browser: true // Default: false
-    }),
+    nodeResolve(),
 
     // CommonJS 模块转换为 ES2015
     commonjs(),
@@ -55,7 +47,7 @@ const rollupConfig = {
     eslint({
       throwOnError: true,
       throwOnWarning: true,
-      include: ['src/**/*.ts'],
+      include: ['bin/*.ts', 'lib/**/*.ts'],
       exclude: ['node_modules', 'dist', 'test']
     }),
 
@@ -72,6 +64,11 @@ const rollupConfig = {
       exclude: 'node_modules/**',
       // babel 默认不支持 ts 需要手动添加
       extensions: [...DEFAULT_EXTENSIONS, '.ts']
+    }),
+
+    replace({
+      delimiters: ['', ''],
+      '#!/usr/bin/env node': ''
     }),
 
     // 代码压缩
