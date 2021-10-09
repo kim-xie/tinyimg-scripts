@@ -12,7 +12,6 @@ const logger = require('../lib/utils/logger')
     .usage('<inputDir | imgFile> [outputDir] [options]')
 
   program
-    .alias('tinyimg')
     .option('-I, --inputDir <inputDir>', 'imgs or img input dir')
     .option('-F, --imgFile <imgPath>', 'img path')
     .option('-O, --outputDir <outputDir>', 'imgs or img output dir')
@@ -25,8 +24,8 @@ const logger = require('../lib/utils/logger')
         logger.info('tinyimg by inputDir starting...')
         try {
           await tinyImg.compressImgByDir({
-            inputPath: path.resolve(__dirname, inputDir),
-            outputPath: path.resolve(__dirname, outputDir || inputDir),
+            inputPath: inputDir,
+            outputPath: outputDir || inputDir,
             isRecursion: recursive,
             showLog: showLog
           })

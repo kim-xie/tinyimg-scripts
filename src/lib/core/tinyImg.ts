@@ -128,25 +128,23 @@ const RandomHeader = () => {
  * @param outputPath 压缩后的输出目录
  * @returns Promise
  */
-const compressImg = async (file: any, filename: string, outputPath: string) => {
+const compressImg = async (file: any, filePath: string, filename: string, outputPath: string) => {
   try {
     const uploadResponse: any = await uploadImg(file)
     const downloadData = await downloadImg(uploadResponse.output.url)
     const oldSize = Chalk.redBright(ByteSize(uploadResponse.input.size))
     const newSize = Chalk.greenBright(ByteSize(uploadResponse.output.size))
     const ratio = Chalk.blueBright(RoundNum(1 - uploadResponse.output.ratio, 2, true))
-    const msg = `Compress [${Chalk.greenBright(
-      filename
-    )}] completed: Old Size ${oldSize}, New Size ${newSize}, Optimization Ratio ${ratio}`
+
     const currentPath = await mkdirPath(outputPath)
-    Fs.writeFileSync(
-      Path.join(currentPath as string, filename),
-      downloadData as NodeJS.ArrayBufferView,
-      'binary'
-    )
+    const outputFilePath = Path.join(currentPath as string, filename)
+    Fs.writeFileSync(outputFilePath, downloadData as NodeJS.ArrayBufferView, 'binary')
+    const msg = `Compress [${Chalk.greenBright(filePath)}] completed to [${Chalk.greenBright(
+      outputFilePath
+    )}]: Old Size ${oldSize}, New Size ${newSize}, Optimization Ratio ${ratio}`
     return Promise.resolve(msg)
   } catch (err) {
-    const msg = `Compress [${Chalk.greenBright(filename)}] failed: ${Chalk.redBright(err)}`
+    const msg = `Compress [${Chalk.greenBright(filePath)}] failed: ${Chalk.redBright(err)}`
     return Promise.resolve(msg)
   }
 }
@@ -215,7 +213,7 @@ const compressImgByDir = ({
   readDirFile(inputPath, isRecursion, (filePath, fileName) => {
     if (IMG_REGEXP.test(Path.extname(fileName))) {
       const file = Fs.readFileSync(filePath)
-      compressImg(file, fileName, outputPath).then(msg => {
+      compressImg(file, filePath, fileName, outputPath).then(msg => {
         showLog && console.log(msg)
         cb && cb()
       })

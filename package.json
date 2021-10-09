@@ -1,6 +1,6 @@
 {
   "name": "tinyimg-scripts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "tinyimg script",
   "main": "./dist/bin/tinyimg-scripts.js",
   "types": "./dist/bin/tinyimg-scripts.d.ts",
@@ -10,14 +10,14 @@
   "scripts": {
     "setup": "rm -rf node_modules && npm install --no-package-lock",
     "start": "rollup -c rollup.config.js -w",
-    "build": "rm -fr dist && rollup -c rollup.config.js",
-    "build:tsc": "rm -fr dist && tsc && npm run copy",
+    "build:rollup": "rm -fr dist && rollup -c rollup.config.js",
+    "build": "rm -fr dist && tsc && npm run copy",
     "copy": "mv dist/src/* dist/ && rm -fr dist/src",
     "test": "jest --coverage --verbose -u",
     "lint": "eslint --ext .ts --format=pretty src/**",
     "lint:fix": "eslint --fix --ext .ts --format=pretty src/**",
     "prettier": "prettier -c -w src/**",
-    "changelog": "node changelog.js",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "preCommit": "lint-staged",
     "commitlint": "commitlint --config commitlint.config.js -e -V",
     "prepare": "husky install"
