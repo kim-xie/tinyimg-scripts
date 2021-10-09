@@ -17,7 +17,7 @@
     "lint": "eslint --ext .ts --format=pretty src/**",
     "lint:fix": "eslint --fix --ext .ts --format=pretty src/**",
     "prettier": "prettier -c -w src/**",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "preCommit": "lint-staged",
     "commitlint": "commitlint --config commitlint.config.js -e -V",
     "prepare": "husky install"
