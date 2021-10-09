@@ -1,6 +1,6 @@
 {
   "name": "tinyimg-scripts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "tinyimg script",
   "main": "./dist/bin/tinyimg-scripts.js",
   "types": "./dist/bin/tinyimg-scripts.d.ts",
