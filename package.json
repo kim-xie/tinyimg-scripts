@@ -1,6 +1,6 @@
 {
   "name": "tinyimg-scripts",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "tinyimg script",
   "main": "./dist/bin/tinyimg-scripts.js",
   "types": "./dist/bin/tinyimg-scripts.d.ts",
@@ -48,9 +48,6 @@
   "homepage": "https://github.com/mr-kings/tinyimg-scripts#readme",
   "bugs": {
     "url": "https://github.com/mr-kings/tinyimg-scripts/issues"
-  },
-  "engines": {
-    "node": "14.17.6"
   },
   "sideEffects": "false",
   "dependencies": {

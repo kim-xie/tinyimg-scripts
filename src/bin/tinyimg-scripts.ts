@@ -40,11 +40,12 @@ const logger = require('../lib/utils/logger')
         }
         try {
           if (tinyImg.IMG_REGEXP.test(path.extname(imgFile))) {
-            const filePath = path.resolve(__dirname, imgFile)
+            const currentEnv = process.cwd()
+            const filePath = path.join(currentEnv, imgFile)
             const file = fs.readFileSync(filePath)
             const fileName = path.basename(filePath)
-            const ouputPath = path.resolve(__dirname, outputDir)
-            tinyImg.compressImg(file, fileName, ouputPath).then((msg: string) => {
+            const ouputPath = path.join(currentEnv, outputDir)
+            tinyImg.compressImg(file, filePath, fileName, ouputPath).then((msg: string) => {
               showLog && console.log(msg)
               logger.success('tinyimg by imgFile completed')
             })

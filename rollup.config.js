@@ -31,7 +31,24 @@ const rollupConfig = {
       banner: '#!/usr/bin/env node'
     }
   ],
+  context: 'global',
+  // moduleContext: id => {
+  //   console.log('id', id)
+  //   // In order to match native module behaviour, Rollup sets `this`
+  //   // as `undefined` at the top level of modules. Rollup also outputs
+  //   // a warning if a module tries to access `this` at the top level.
+  //   // The following modules use `this` at the top level and expect it
+  //   // to be the global `window` object, so we tell Rollup to set
+  //   // `this = window` for these modules.
+  //   const thisAsWindowForModules = [
+  //     'node_modules/intl-messageformat/lib/core.js',
+  //     'node_modules/intl-messageformat/lib/compiler.js'
+  //   ]
 
+  //   if (thisAsWindowForModules.some(id_ => id.trimRight().endsWith(id_))) {
+  //     return 'window'
+  //   }
+  // },
   // plugins 需要注意引用顺序
   plugins: [
     // globals(),
@@ -47,7 +64,7 @@ const rollupConfig = {
     eslint({
       throwOnError: true,
       throwOnWarning: true,
-      include: ['bin/*.ts', 'lib/**/*.ts'],
+      include: ['src/**/*.ts'],
       exclude: ['node_modules', 'dist', 'test']
     }),
 
