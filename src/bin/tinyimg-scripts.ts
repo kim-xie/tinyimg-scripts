@@ -9,25 +9,28 @@ const logger = require('../lib/utils/logger')
 ;(async () => {
   program
     .version(packageInfo.version, '-V, --version')
-    .usage('<inputDir | imgFile> [outputDir] [options]')
+    .usage('<imgDir | imgFile> [outputDir] [options]')
 
   program
-    .option('-I, --inputDir <inputDir>', 'imgs or img input dir')
+    .option('-I, --imgDir <imgDir>', 'imgs or img input dir')
     .option('-F, --imgFile <imgPath>', 'img path')
     .option('-O, --outputDir <outputDir>', 'imgs or img output dir')
     .option('-R, --recursive [boolean]', 'imgs input dir recursive')
     .option('-L, --showLog [boolean]', 'show img tiny log')
     .action(async (options: any) => {
-      const { inputDir, imgFile, recursive, showLog } = options
+      const { imgDir, imgFile, recursive, showLog } = options
       let outputDir = options.outputDir
-      if (inputDir) {
-        logger.info('tinyimg by inputDir starting...')
+      if (imgDir) {
+        logger.info('tinyimg by imgDir starting...')
         try {
           await tinyImg.compressImgByDir({
-            inputPath: inputDir,
-            outputPath: outputDir || inputDir,
+            inputPath: imgDir,
+            outputPath: outputDir || imgDir,
             isRecursion: recursive,
-            showLog: showLog
+            showLog: showLog,
+            cb: (total: number) => {
+              logger.success(`tinyimg by imgDir completed, ${total} photos in total`)
+            }
           })
         } catch (error) {
           logger.error(error)
@@ -41,14 +44,20 @@ const logger = require('../lib/utils/logger')
         try {
           if (tinyImg.IMG_REGEXP.test(path.extname(imgFile))) {
             const currentEnv = process.cwd()
-            const filePath = path.join(currentEnv, imgFile)
-            const file = fs.readFileSync(filePath)
-            const fileName = path.basename(filePath)
-            const ouputPath = path.join(currentEnv, outputDir)
-            tinyImg.compressImg(file, filePath, fileName, ouputPath).then((msg: string) => {
-              showLog && console.log(msg)
-              logger.success('tinyimg by imgFile completed')
-            })
+            const fileRealPath = path.join(currentEnv, imgFile)
+            const file = fs.readFileSync(fileRealPath)
+            const fileName = path.basename(fileRealPath)
+
+            const filePath = imgFile.indexOf('/') > -1 ? imgFile.split('/').join('\\') : imgFile
+            const outputPath =
+              outputDir.indexOf('\\') > -1 ? outputDir.split('\\').join('/') : outputDir
+            const inputPath = imgFile.indexOf('\\') > -1 ? imgFile.split('\\').join('/') : imgFile
+            tinyImg
+              .compressImg(file, filePath, fileName, inputPath, outputPath)
+              .then((msg: string) => {
+                showLog && console.log(msg)
+                logger.success('tinyimg by imgFile completed')
+              })
           }
         } catch (error) {
           logger.error(error)

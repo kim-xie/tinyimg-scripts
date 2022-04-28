@@ -128,7 +128,13 @@ const RandomHeader = () => {
  * @param outputPath 压缩后的输出目录
  * @returns Promise
  */
-const compressImg = async (file: any, filePath: string, filename: string, outputPath: string) => {
+const compressImg = async (
+  file: any,
+  filePath: string,
+  filename: string,
+  inputPath: string,
+  outputPath: string
+) => {
   try {
     const uploadResponse: any = await uploadImg(file)
     const downloadData = await downloadImg(uploadResponse.output.url)
@@ -136,9 +142,14 @@ const compressImg = async (file: any, filePath: string, filename: string, output
     const newSize = Chalk.greenBright(ByteSize(uploadResponse.output.size))
     const ratio = Chalk.blueBright(RoundNum(1 - uploadResponse.output.ratio, 2, true))
 
-    const currentPath = await mkdirPath(outputPath)
+    const pathName = filePath
+      .replace(inputPath?.replace('/', '\\'), outputPath?.replace('/', '\\'))
+      .replace(filename, '')
+    const currentPath = await mkdirPath(pathName)
     const outputFilePath = Path.join(currentPath as string, filename)
+
     Fs.writeFileSync(outputFilePath, downloadData as NodeJS.ArrayBufferView, 'binary')
+
     const msg = `Compress [${Chalk.greenBright(filePath)}] completed to [${Chalk.greenBright(
       outputFilePath
     )}]: Old Size ${oldSize}, New Size ${newSize}, Optimization Ratio ${ratio}`
@@ -150,7 +161,7 @@ const compressImg = async (file: any, filePath: string, filename: string, output
 }
 
 /**
- * 图片上传压缩
+ * 图片压缩后下载
  * @param url
  * @returns
  */
@@ -169,7 +180,7 @@ const downloadImg = (url: string) => {
 }
 
 /**
- * 图片压缩后下载
+ * 图片上传压缩
  * @param file
  * @returns
  */
@@ -208,14 +219,20 @@ const compressImgByDir = ({
   outputPath: string
   isRecursion: boolean
   showLog: boolean
-  cb?: () => void
+  cb?: (total: number) => void
 }) => {
+  let total = 0
+  let len = 0
   readDirFile(inputPath, isRecursion, (filePath, fileName) => {
     if (IMG_REGEXP.test(Path.extname(fileName))) {
+      total++
       const file = Fs.readFileSync(filePath)
-      compressImg(file, filePath, fileName, outputPath).then(msg => {
+      compressImg(file, filePath, fileName, inputPath, outputPath).then(msg => {
         showLog && console.log(msg)
-        cb && cb()
+        len++
+        if (cb && total === len) {
+          cb(Chalk.red(total))
+        }
       })
     }
   })
@@ -232,6 +249,7 @@ function readDirFile(
   Fs.readdir(currentDirPath, (err: any, files: any) => {
     if (err) {
       console.warn(err)
+      return
     }
     files.forEach((name: string) => {
       const filePath = Path.join(currentDirPath, name)

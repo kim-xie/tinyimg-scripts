@@ -1,6 +1,6 @@
 {
   "name": "tinyimg-scripts",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "tinyimg script",
   "main": "./dist/bin/tinyimg-scripts.js",
   "types": "./dist/bin/tinyimg-scripts.d.ts",
@@ -12,6 +12,8 @@
     "start": "rollup -c rollup.config.js -w",
     "build:rollup": "rm -fr dist && rollup -c rollup.config.js",
     "build": "rm -fr dist && tsc && npm run copy",
+    "tinyimg:dir": "ts-node ./src/bin/tinyimg-scripts.ts -I test/img -O test/newImg -L -R",
+    "tinyimg:file": "ts-node ./src/bin/tinyimg-scripts.ts -F test/img/A.jpg -O test/newImg -L",
     "copy": "mv dist/src/* dist/ && rm -fr dist/src",
     "test": "jest --coverage --verbose -u",
     "lint": "eslint --ext .ts --format=pretty src/**",
