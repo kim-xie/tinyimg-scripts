@@ -15,7 +15,7 @@ import builtins from 'rollup-plugin-node-builtins'
 import pkg from './package.json'
 
 const paths = {
-  input: path.join(__dirname, 'src/bin/tinyimg-scripts.ts'),
+  input: path.join(__dirname, '/src/bin/tinyimg-scripts.ts'),
   output: path.join(__dirname, '/dist')
 }
 
@@ -27,6 +27,13 @@ const rollupConfig = {
     {
       file: pkg.main,
       format: 'cjs',
+      name: pkg.name,
+      banner: '#!/usr/bin/env node'
+    },
+    // 输出 es 规范的代码
+    {
+      file: pkg.module,
+      format: 'es',
       name: pkg.name,
       banner: '#!/usr/bin/env node'
     }

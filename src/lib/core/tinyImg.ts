@@ -113,8 +113,8 @@ const RandomHeader = () => {
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
       'X-Forwarded-For': ip
     },
-    hostname: TINYIMG_URL[index],
     method: 'POST',
+    host: TINYIMG_URL[index],
     path: '/web/shrink',
     rejectUnauthorized: false
   }
@@ -141,7 +141,6 @@ const compressImg = async (
     const oldSize = Chalk.redBright(ByteSize(uploadResponse.input.size))
     const newSize = Chalk.greenBright(ByteSize(uploadResponse.output.size))
     const ratio = Chalk.blueBright(RoundNum(1 - uploadResponse.output.ratio, 2, true))
-
     const pathName = filePath
       .replace(inputPath?.replace('/', '\\'), outputPath?.replace('/', '\\'))
       .replace(filename, '')
