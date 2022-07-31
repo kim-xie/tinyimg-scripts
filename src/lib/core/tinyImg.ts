@@ -69,12 +69,31 @@ const mkdirPath = async (pathStr: string) => {
         Fs.mkdirSync(currentPath)
       }
     } else {
-      Fs.mkdirSync(currentPath)
+      // 只能一级一级生成
+      // Fs.mkdirSync(currentPath)
+
+      // 可以跨层级生成
+      mkdirSyncUtil(currentPath)
     }
   } catch (err) {
     console.log(Chalk.red('文件生成出错啦！'))
   }
   return currentPath
+}
+
+const mkdirSyncUtil = (dirname: string) => {
+  try {
+    if (Fs.existsSync(dirname)) {
+      return dirname
+    } else {
+      if (mkdirSyncUtil(Path.dirname(dirname))) {
+        Fs.mkdirSync(dirname)
+        return dirname
+      }
+    }
+  } catch (error) {
+    console.log(Chalk.red('文件生成出错啦！'))
+  }
 }
 
 /**
@@ -133,9 +152,18 @@ const compressImg = async (
   filePath: string,
   filename: string,
   inputPath: string,
-  outputPath: string
+  outputPath: string,
+  minLimit: number
 ) => {
   try {
+    const fileSize = Fs.statSync(filePath)['size']
+    if (fileSize / 1024 < minLimit) {
+      const msg = `[${Chalk.greenBright(filePath)}] size is ${Chalk.redBright(
+        ByteSize(fileSize)
+      )} less than minLimit ${Chalk.redBright(minLimit)} KB so not tiny`
+      console.log(msg)
+      return Promise.reject()
+    }
     const uploadResponse: any = await uploadImg(file)
     const downloadData = await downloadImg(uploadResponse.output.url)
     const oldSize = Chalk.redBright(ByteSize(uploadResponse.input.size))
@@ -212,12 +240,14 @@ const compressImgByDir = ({
   outputPath,
   isRecursion,
   showLog,
+  minLimit,
   cb
 }: {
   inputPath: string
   outputPath: string
   isRecursion: boolean
   showLog: boolean
+  minLimit: number
   cb?: (total: number) => void
 }) => {
   let total = 0
@@ -226,13 +256,23 @@ const compressImgByDir = ({
     if (IMG_REGEXP.test(Path.extname(fileName))) {
       total++
       const file = Fs.readFileSync(filePath)
-      compressImg(file, filePath, fileName, inputPath, outputPath).then(msg => {
-        showLog && console.log(msg)
-        len++
-        if (cb && total === len) {
-          cb(Chalk.red(total))
-        }
-      })
+      compressImg(file, filePath, fileName, inputPath, outputPath, minLimit)
+        .then(
+          msg => {
+            showLog && console.log(msg)
+            len++
+            if (cb && total === len) {
+              cb(Chalk.red(total))
+            }
+          },
+          msg => {
+            showLog && console.log(msg)
+            total--
+          }
+        )
+        .catch(err => {
+          console.log('图片压缩报错啦', err)
+        })
     }
   })
 }

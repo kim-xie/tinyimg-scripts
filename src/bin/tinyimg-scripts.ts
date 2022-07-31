@@ -15,10 +15,11 @@ const logger = require('../lib/utils/logger')
     .option('-I, --imgDir <imgDir>', 'imgs or img input dir')
     .option('-F, --imgPath <imgPath>', 'img path')
     .option('-O, --outputDir <outputDir>', 'imgs or img output dir')
+    .option('-M, --minLimit [number]', 'img min limit size')
     .option('-R, --recursive [boolean]', 'imgs input dir recursive')
     .option('-L, --showLog [boolean]', 'show img tiny log')
     .action(async (options: any) => {
-      const { imgDir, imgPath, recursive, showLog } = options
+      const { imgDir, imgPath, recursive, showLog, minLimit } = options
       let outputDir = options.outputDir
       if (imgDir) {
         logger.info('compress image by imgDir starting...')
@@ -27,7 +28,8 @@ const logger = require('../lib/utils/logger')
             inputPath: imgDir,
             outputPath: outputDir || imgDir,
             isRecursion: recursive,
-            showLog: showLog,
+            showLog,
+            minLimit,
             cb: (total: number) => {
               logger.success(`compress image by imgDir completed, ${total} images in total`)
             }
@@ -54,7 +56,7 @@ const logger = require('../lib/utils/logger')
               outputDir.indexOf('\\') > -1 ? outputDir.split('\\').join('/') : outputDir
 
             tinyImg
-              .compressImg(file, filePath, fileName, inputPath, outputPath)
+              .compressImg(file, filePath, fileName, inputPath, outputPath, minLimit)
               .then((msg: string) => {
                 showLog && console.log(msg)
                 logger.success('compress image by imgPath completed')

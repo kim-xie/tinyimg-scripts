@@ -1,6 +1,6 @@
 {
   "name": "tinyimg-scripts",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "tinyimg script",
   "module": "./dist/bin/tinyimg-scripts.esm.js",
   "main": "./dist/bin/tinyimg-scripts.js",
@@ -12,7 +12,9 @@
     "setup": "rm -rf node_modules && npm install --no-package-lock",
     "build": "rm -fr dist && tsc",
     "start:file": "ts-node ./src/bin/tinyimg-scripts.ts -F test/img/B.jpg -O test/newImg -L",
+    "start:file:limit": "ts-node ./src/bin/tinyimg-scripts.ts -F test/img/B.jpg -O test/newImg -L -M 600",
     "start:dir": "ts-node ./src/bin/tinyimg-scripts.ts -I test/img -O test/subImg -L -R",
+    "start:dir:limit": "ts-node ./src/bin/tinyimg-scripts.ts -I test/img -O test/subImg -L -R -M 600",
     "copy": "mv -u dist/src/* dist/ && rm -fr dist/src",
     "test": "jest --coverage --verbose -u",
     "lint": "eslint --ext .ts --format=pretty src/**",
@@ -56,7 +58,8 @@
     "chokidar": "^3.5.2",
     "commander": "^8.2.0",
     "cp": "^0.2.0",
-    "semver": "^7.3.5"
+    "semver": "^7.3.5",
+    "webp-scripts": "1.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
