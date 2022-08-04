@@ -1,22 +1,23 @@
 import path from 'path'
 import typescript from 'rollup-plugin-typescript2'
 import babel from '@rollup/plugin-babel'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import { eslint } from 'rollup-plugin-eslint'
+import eslint from '@rollup/plugin-eslint'
+import json from '@rollup/plugin-json'
 import { DEFAULT_EXTENSIONS } from '@babel/core'
 import { terser } from 'rollup-plugin-terser'
 import replace from 'rollup-plugin-replace'
 
 // 按需打包nodejs内置模块  尽可能少用node模块 node-builtins可能会引入过多的代码
-import builtins from 'rollup-plugin-node-builtins'
+// import builtins from 'rollup-plugin-node-builtins'
 // import globals from 'rollup-plugin-node-globals';
 
 import pkg from './package.json'
 
 const paths = {
-  input: path.join(__dirname, '/src/bin/tinyimg-scripts.ts'),
-  output: path.join(__dirname, '/dist')
+  input: path.join(__dirname, 'src/bin/tinyimg-scripts.ts'),
+  output: path.join(__dirname, 'dist')
 }
 
 // rollup 配置项
@@ -38,31 +39,15 @@ const rollupConfig = {
       banner: '#!/usr/bin/env node'
     }
   ],
-  context: 'global',
-  // moduleContext: id => {
-  //   console.log('id', id)
-  //   // In order to match native module behaviour, Rollup sets `this`
-  //   // as `undefined` at the top level of modules. Rollup also outputs
-  //   // a warning if a module tries to access `this` at the top level.
-  //   // The following modules use `this` at the top level and expect it
-  //   // to be the global `window` object, so we tell Rollup to set
-  //   // `this = window` for these modules.
-  //   const thisAsWindowForModules = [
-  //     'node_modules/intl-messageformat/lib/core.js',
-  //     'node_modules/intl-messageformat/lib/compiler.js'
-  //   ]
-
-  //   if (thisAsWindowForModules.some(id_ => id.trimRight().endsWith(id_))) {
-  //     return 'window'
-  //   }
-  // },
   // plugins 需要注意引用顺序
   plugins: [
     // globals(),
-    builtins(),
+    // builtins(),
+
+    json(),
 
     // 解析第三方模块 -- Must be before rollup-plugin-typescript2 in the plugin list, especially when browser: true option is used
-    nodeResolve(),
+    resolve(),
 
     // CommonJS 模块转换为 ES2015
     commonjs(),
@@ -84,6 +69,7 @@ const rollupConfig = {
     // babel处理 @rollup/plugin-commonjs must be placed before this plugin in the plugins
     babel({
       babelHelpers: 'runtime',
+      include: ['src/**/*.ts'],
       // 只转换源代码，不运行外部依赖
       exclude: 'node_modules/**',
       // babel 默认不支持 ts 需要手动添加

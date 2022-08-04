@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-const program = require('commander')
-const path = require('path')
-const fs = require('fs')
-const packageInfo = require('../../package.json')
-const tinyImg = require('../lib/core/tinyImg')
-const logger = require('../lib/utils/logger')
-
+import { program } from 'commander'
+import path from 'path'
+import fs from 'fs'
+import Chalk from 'chalk'
+import packageInfo from '../../package.json'
+import tinyImg from '../lib/core/tinyImg'
+import logger from '../lib/utils/logger'
 ;(async () => {
   program
     .version(packageInfo.version, '-V, --version')
@@ -31,10 +31,12 @@ const logger = require('../lib/utils/logger')
             showLog,
             minLimit,
             cb: (total: number) => {
-              logger.success(`compress image by imgDir completed, ${total} images in total`)
+              logger.success(
+                `compress image by imgDir completed, ${Chalk.red(total)} images in total`
+              )
             }
           })
-        } catch (error) {
+        } catch (error: any) {
           logger.error(error)
           process.exit(1)
         }
@@ -62,7 +64,7 @@ const logger = require('../lib/utils/logger')
                 logger.success('compress image by imgPath completed')
               })
           }
-        } catch (error) {
+        } catch (error: any) {
           logger.error(error)
           process.exit(1)
         }
@@ -73,12 +75,12 @@ const logger = require('../lib/utils/logger')
 
   program.showHelpAfterError()
 
-  const proc = program.runningCommand
+  // const proc = program.runningCommand
 
-  if (proc) {
-    proc.on('close', process.exit.bind(process))
-    proc.on('error', () => {
-      process.exit(1)
-    })
-  }
+  // if (proc) {
+  //   proc.on('close', process.exit.bind(process))
+  //   proc.on('error', () => {
+  //     process.exit(1)
+  //   })
+  // }
 })()

@@ -1,11 +1,11 @@
 /**
  * 图片处理相关工具
  */
-const Fs = require('fs')
-const Path = require('path')
-const Https = require('https')
-const Url = require('url')
-const Chalk = require('chalk')
+import Fs from 'fs'
+import Path from 'path'
+import Https from 'https'
+import Url from 'url'
+import Chalk from 'chalk'
 
 /**
  * 支持压缩的图片格式
@@ -156,12 +156,19 @@ const compressImg = async (
   minLimit: number
 ) => {
   try {
+    const pathName = filePath
+      .replace(inputPath?.replace(/\//g, '\\'), outputPath?.replace(/\//g, '\\'))
+      .replace(filename, '')
+    const currentPath = await mkdirPath(pathName)
+    const outputFilePath = Path.join(currentPath as string, filename)
+
     const fileSize = Fs.statSync(filePath)['size']
     if (fileSize / 1024 < minLimit) {
       const msg = `[${Chalk.greenBright(filePath)}] size is ${Chalk.redBright(
         ByteSize(fileSize)
       )} less than minLimit ${Chalk.redBright(minLimit)} KB so not tiny`
       console.log(msg)
+      Fs.writeFileSync(outputFilePath, file as NodeJS.ArrayBufferView, 'binary')
       return Promise.reject()
     }
     const uploadResponse: any = await uploadImg(file)
@@ -169,11 +176,6 @@ const compressImg = async (
     const oldSize = Chalk.redBright(ByteSize(uploadResponse.input.size))
     const newSize = Chalk.greenBright(ByteSize(uploadResponse.output.size))
     const ratio = Chalk.blueBright(RoundNum(1 - uploadResponse.output.ratio, 2, true))
-    const pathName = filePath
-      .replace(inputPath?.replace('/', '\\'), outputPath?.replace('/', '\\'))
-      .replace(filename, '')
-    const currentPath = await mkdirPath(pathName)
-    const outputFilePath = Path.join(currentPath as string, filename)
 
     Fs.writeFileSync(outputFilePath, downloadData as NodeJS.ArrayBufferView, 'binary')
 
@@ -262,7 +264,7 @@ const compressImgByDir = ({
             showLog && console.log(msg)
             len++
             if (cb && total === len) {
-              cb(Chalk.red(total))
+              cb(total)
             }
           },
           msg => {
@@ -313,7 +315,7 @@ function readDirFile(
 /**
  * 模块导出
  */
-module.exports = {
+export default {
   RandomHeader,
   RoundNum,
   ByteSize,
